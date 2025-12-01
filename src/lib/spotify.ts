@@ -257,6 +257,48 @@ export const GENRE_CATEGORIES = [
   { id: 'disco', name: 'Disco', color: '#F8B500' },
   { id: 'ambient', name: 'Ambient', color: '#96CEB4' },
   { id: 'k-pop', name: 'K-Pop', color: '#FF69B4' },
+  { id: 'edm', name: 'EDM', color: '#00FFFF' },
+  { id: 'ballad', name: 'Ballad', color: '#DDA0DD' },
+  { id: 'classic', name: 'Classic', color: '#AA96DA' },
+  { id: 'r&b', name: 'R&B', color: '#FCBAD3' },
 ];
+
+/**
+ * Map user-selected genre IDs to valid Spotify genre seeds
+ * Some genre IDs used in the UI don't match Spotify's available genre seeds
+ */
+export const GENRE_TO_SPOTIFY_SEED: { [key: string]: string } = {
+  'k-pop': 'k-pop',
+  'indie': 'indie',
+  'pop': 'pop',
+  'classic': 'classical',
+  'classical': 'classical',
+  'edm': 'edm',
+  'jazz': 'jazz',
+  'hip-hop': 'hip-hop',
+  'r&b': 'r-n-b',
+  'r-n-b': 'r-n-b',
+  'rock': 'rock',
+  'ballad': 'pop', // Ballad is not a Spotify genre, use pop as fallback
+  'electronic': 'electronic',
+  'country': 'country',
+  'latin': 'latin',
+  'metal': 'metal',
+  'alternative': 'alternative',
+  'folk': 'folk',
+  'blues': 'blues',
+  'reggae': 'reggae',
+  'punk': 'punk',
+  'soul': 'soul',
+  'disco': 'disco',
+  'ambient': 'ambient',
+};
+
+/**
+ * Get the Spotify genre seed for a given genre ID
+ */
+export function getSpotifyGenreSeed(genreId: string): string {
+  return GENRE_TO_SPOTIFY_SEED[genreId] || genreId;
+}
 
 export type { SpotifyTrack, SpotifyAlbum, SpotifyCategory, SpotifyAudioFeatures, SpotifySearchResult };

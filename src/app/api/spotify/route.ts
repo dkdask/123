@@ -8,6 +8,7 @@ import {
   getRandomTracksFromGenre,
   getNewReleases,
   GENRE_CATEGORIES,
+  getSpotifyGenreSeed,
 } from '@/lib/spotify';
 
 export async function GET(request: NextRequest) {
@@ -40,7 +41,9 @@ export async function GET(request: NextRequest) {
         if (seedGenres.length === 0) {
           return NextResponse.json({ error: 'At least one genre is required' }, { status: 400 });
         }
-        const tracks = await getRecommendations(seedGenres);
+        // Map user genre IDs to Spotify genre seeds
+        const mappedGenres = seedGenres.map(getSpotifyGenreSeed);
+        const tracks = await getRecommendations(mappedGenres);
         return NextResponse.json({ tracks });
       }
       
@@ -49,7 +52,9 @@ export async function GET(request: NextRequest) {
         if (!genre) {
           return NextResponse.json({ error: 'Genre is required' }, { status: 400 });
         }
-        const tracks = await getTracksByGenre(genre);
+        // Map user genre ID to Spotify genre seed
+        const spotifyGenre = getSpotifyGenreSeed(genre);
+        const tracks = await getTracksByGenre(spotifyGenre);
         return NextResponse.json({ tracks });
       }
       
@@ -59,7 +64,9 @@ export async function GET(request: NextRequest) {
         if (!genre) {
           return NextResponse.json({ error: 'Genre is required' }, { status: 400 });
         }
-        const tracks = await getRandomTracksFromGenre(genre, count);
+        // Map user genre ID to Spotify genre seed
+        const spotifyGenre = getSpotifyGenreSeed(genre);
+        const tracks = await getRandomTracksFromGenre(spotifyGenre, count);
         return NextResponse.json({ tracks });
       }
       
