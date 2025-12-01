@@ -255,7 +255,7 @@ export default function EvaluatePage() {
                   alt={currentTrack.album}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/placeholder-album.png';
+                    (e.target as HTMLImageElement).src = '/placeholder-album.svg';
                   }}
                 />
               </motion.div>

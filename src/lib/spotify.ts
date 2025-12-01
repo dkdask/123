@@ -228,7 +228,7 @@ export async function getNewReleases(limit: number = 20): Promise<SpotifyAlbum[]
  */
 export function getAlbumCoverUrl(album: SpotifyAlbum, size: 'small' | 'medium' | 'large' = 'medium'): string {
   if (!album.images || album.images.length === 0) {
-    return '/placeholder-album.png';
+    return '/placeholder-album.svg';
   }
   
   const sizeIndex = size === 'large' ? 0 : size === 'medium' ? 1 : 2;

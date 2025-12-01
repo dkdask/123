@@ -80,11 +80,11 @@ export function PlaylistDisplay({
                   
                   <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg flex-shrink-0">
                     <img
-                      src={track.albumImage || '/placeholder-album.png'}
+                      src={track.albumImage || '/placeholder-album.svg'}
                       alt={track.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/placeholder-album.png';
+                        (e.target as HTMLImageElement).src = '/placeholder-album.svg';
                       }}
                     />
                   </div>

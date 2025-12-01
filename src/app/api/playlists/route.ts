@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
+import { getPrismaClient, DatabaseClient } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -10,6 +10,11 @@ export async function GET(request: NextRequest) {
   }
   
   try {
+    const prisma = await getPrismaClient() as DatabaseClient | null;
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
+    }
+    
     const playlists = await prisma.generatedPlaylist.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
@@ -35,6 +40,11 @@ export async function POST(request: NextRequest) {
         { error: 'userId, context, and songs are required' },
         { status: 400 }
       );
+    }
+    
+    const prisma = await getPrismaClient() as DatabaseClient | null;
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
     }
     
     // Create the playlist

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
+import { getPrismaClient, DatabaseClient } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -7,6 +7,11 @@ export async function GET(request: NextRequest) {
   const email = searchParams.get('email');
   
   try {
+    const prisma = await getPrismaClient() as DatabaseClient | null;
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
+    }
+    
     if (userId) {
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -56,6 +61,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'email is required' }, { status: 400 });
     }
     
+    const prisma = await getPrismaClient() as DatabaseClient | null;
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
+    }
+    
     // Create or update user
     const user = await prisma.user.upsert({
       where: { email },
@@ -94,6 +104,11 @@ export async function PUT(request: NextRequest) {
     
     if (!userId) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+    }
+    
+    const prisma = await getPrismaClient() as DatabaseClient | null;
+    if (!prisma) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
     }
     
     // Update preferences

@@ -84,11 +84,11 @@ export function AlbumCard({
     >
       <div className={`${imageSizes[size]} rounded-lg overflow-hidden mb-2 shadow-lg`}>
         <img
-          src={imageUrl || '/placeholder-album.png'}
+          src={imageUrl || '/placeholder-album.svg'}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = '/placeholder-album.png';
+            (e.target as HTMLImageElement).src = '/placeholder-album.svg';
           }}
         />
       </div>

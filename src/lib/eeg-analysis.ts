@@ -310,6 +310,10 @@ function analyzeHRV(biomarkers: BiomarkerDataPoint[]): {
  * P300 is a positive peak occurring around 300ms after stimulus
  * High P300 amplitude indicates attention/interest
  */
+
+// P300 normalization threshold in microvolts - typical P300 amplitude range
+const P300_AMPLITUDE_THRESHOLD_UV = 0.0005;
+
 function detectP300(rawData: RawDataPoint[]): number {
   if (rawData.length < 50) return 0;
   
@@ -329,9 +333,8 @@ function detectP300(rawData: RawDataPoint[]): number {
     }
   }
   
-  // Normalize P300 amplitude (typical values in microvolts)
-  // Scale to 0-1 range
-  return Math.min(1, maxAmplitude / 0.0005);
+  // Normalize P300 amplitude to 0-1 range using typical P300 threshold
+  return Math.min(1, maxAmplitude / P300_AMPLITUDE_THRESHOLD_UV);
 }
 
 /**
