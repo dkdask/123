@@ -60,11 +60,80 @@ interface SpotifyTrackWithGenres extends SpotifyTrack {
   artistGenres?: string[];
 }
 
+// Expanded list of known artists per genre for better offline detection
+const KNOWN_ARTISTS: { [key: string]: string[] } = {
+  'k-pop': [
+    'bts', 'blackpink', 'aespa', 'twice', 'exo', 'nct', 'stray kids', 'itzy', 'ive',
+    'newjeans', 'seventeen', 'txt', 'enhypen', 'le sserafim', 'red velvet', 'got7',
+    'monsta x', 'ateez', 'treasure', 'gidle', 'mamamoo', 'apink', 'shinee', 'bigbang',
+    '2ne1', 'super junior', 'girls generation', 'snsd', 'psy', 'jay park', 'zico',
+    'dean', 'crush', 'iu', '아이유', 'taeyeon', 'baekhyun', 'kai', 'lisa', 'jimin',
+    'jungkook', 'suga', 'rm', 'jin', 'jhope', 'rosé', 'jennie', 'jisoo'
+  ],
+  'indie': [
+    'arctic monkeys', 'bon iver', 'tame impala', 'radiohead', 'the strokes', 'vampire weekend',
+    'mac demarco', 'beach house', 'phoebe bridgers', 'fleet foxes', 'sufjan stevens',
+    'the national', 'mgmt', 'phoenix', 'foster the people', 'passion pit', 'glass animals',
+    'alt-j', 'local natives', 'grizzly bear', 'modest mouse', 'neutral milk hotel',
+    'arcade fire', 'lcd soundsystem', 'franz ferdinand', 'the kooks', 'kings of leon'
+  ],
+  'classic': [
+    'beethoven', 'mozart', 'bach', 'vivaldi', 'chopin', 'tchaikovsky', 'brahms', 'debussy',
+    'liszt', 'schubert', 'handel', 'haydn', 'dvorak', 'rachmaninoff', 'strauss', 'wagner',
+    'mendelssohn', 'verdi', 'puccini', 'mahler', 'prokofiev', 'stravinsky', 'grieg',
+    'sibelius', 'berlioz', 'ravel', 'satie', 'shostakovich', 'yo-yo ma', 'lang lang'
+  ],
+  'edm': [
+    'avicii', 'deadmau5', 'martin garrix', 'zedd', 'calvin harris', 'marshmello',
+    'david guetta', 'tiesto', 'skrillex', 'diplo', 'kygo', 'alan walker', 'illenium',
+    'odesza', 'flume', 'porter robinson', 'madeon', 'swedish house mafia', 'steve aoki',
+    'armin van buuren', 'hardwell', 'afrojack', 'galantis', 'major lazer', 'dj snake'
+  ],
+  'jazz': [
+    'miles davis', 'john coltrane', 'dave brubeck', 'louis armstrong', 'ella fitzgerald',
+    'charlie parker', 'dizzy gillespie', 'thelonious monk', 'herbie hancock', 'chick corea',
+    'wayne shorter', 'pat metheny', 'bill evans', 'art blakey', 'duke ellington',
+    'count basie', 'oscar peterson', 'chet baker', 'stan getz', 'billie holiday',
+    'nina simone', 'sarah vaughan', 'nat king cole', 'diana krall', 'norah jones'
+  ],
+  'hip-hop': [
+    'kendrick lamar', 'drake', 'travis scott', 'kanye west', 'j. cole', 'tyler the creator',
+    'lil nas x', 'lil baby', 'lil uzi vert', 'lil wayne', '21 savage', 'post malone',
+    'migos', 'future', 'young thug', 'playboi carti', 'asap rocky', 'cardi b', 'megan thee stallion',
+    'dababy', 'roddy ricch', 'pop smoke', 'juice wrld', 'xxxtentacion', 'eminem', 'jay-z',
+    'nas', 'snoop dogg', 'dr. dre', 'ice cube', '50 cent', 'nicki minaj', 'mac miller', 'logic'
+  ],
+  'r&b': [
+    'sza', 'daniel caesar', 'frank ocean', 'the weeknd', 'h.e.r.', 'bryson tiller',
+    'khalid', 'summer walker', 'jhene aiko', 'kehlani', 'anderson .paak', 'brent faiyaz',
+    'giveon', 'doja cat', 'ari lennox', 'usher', 'chris brown', 'trey songz',
+    'r. kelly', 'mary j. blige', 'alicia keys', 'beyonce', 'miguel', 'omarion', 'tank'
+  ],
+  'rock': [
+    'queen', 'led zeppelin', 'ac/dc', 'guns n roses', 'nirvana', 'foo fighters',
+    'green day', 'metallica', 'u2', 'coldplay', 'linkin park', 'red hot chili peppers',
+    'pearl jam', 'the rolling stones', 'the beatles', 'pink floyd', 'aerosmith',
+    'bon jovi', 'van halen', 'def leppard', 'iron maiden', 'black sabbath',
+    'deep purple', 'kiss', 'alice in chains', 'soundgarden', 'the who', 'rush'
+  ],
+  'ballad': [
+    'adele', 'ed sheeran', 'john legend', 'sam smith', 'lewis capaldi',
+    'james arthur', 'christina perri', 'jessie ware', 'lana del rey', 'hozier',
+    'james bay', 'passenger', 'gavin james', 'kodaline', 'dean lewis'
+  ],
+  'pop': [
+    'taylor swift', 'dua lipa', 'ariana grande', 'justin bieber', 'billie eilish',
+    'harry styles', 'olivia rodrigo', 'bruno mars', 'lady gaga', 'katy perry',
+    'rihanna', 'miley cyrus', 'selena gomez', 'shawn mendes', 'charlie puth',
+    'the chainsmokers', 'halsey', 'lauv', 'bebe rexha', 'meghan trainor', 'camila cabello'
+  ]
+};
+
 // Genre detection using Spotify's actual artist genres
 const detectGenreFromTrack = (track: SpotifyTrackWithGenres): string[] => {
   const genres: string[] = [];
   
-  // If we have artist genres from Spotify API, use those
+  // If we have artist genres from Spotify API, use those first (priority)
   if (track.artistGenres && track.artistGenres.length > 0) {
     for (const spotifyGenre of track.artistGenres) {
       const mappedGenre = mapSpotifyGenreToId(spotifyGenre);
@@ -74,94 +143,65 @@ const detectGenreFromTrack = (track: SpotifyTrackWithGenres): string[] => {
     }
   }
   
-  // Fallback to keyword-based detection if no genres found
-  if (genres.length === 0) {
-    const artist = track.artists.map(a => a.name.toLowerCase()).join(' ');
-    const name = track.name.toLowerCase();
-    
-    // K-pop artists
-    if (artist.includes('bts') || artist.includes('blackpink') || artist.includes('aespa') || 
-        artist.includes('twice') || artist.includes('exo') || artist.includes('nct') ||
-        artist.includes('stray kids') || artist.includes('itzy') || artist.includes('ive') ||
-        artist.includes('newjeans') || artist.includes('seventeen') || artist.includes('txt') ||
-        artist.includes('enhypen') || artist.includes('le sserafim') || artist.includes('red velvet')) {
-      genres.push('k-pop');
-    }
-    // Indie artists
-    if (artist.includes('arctic monkeys') || artist.includes('bon iver') || artist.includes('tame impala') ||
-        artist.includes('radiohead') || artist.includes('the strokes') || artist.includes('vampire weekend')) {
-      genres.push('indie');
-    }
-    // Classical
-    if (artist.includes('beethoven') || artist.includes('mozart') || artist.includes('bach') || 
-        artist.includes('vivaldi') || artist.includes('chopin') || artist.includes('tchaikovsky')) {
-      genres.push('classic');
-    }
-    // EDM
-    if (artist.includes('avicii') || artist.includes('deadmau5') || artist.includes('martin garrix') || 
-        artist.includes('zedd') || artist.includes('calvin harris') || artist.includes('marshmello') ||
-        artist.includes('david guetta') || artist.includes('tiesto')) {
-      genres.push('edm');
-    }
-    // Jazz
-    if (artist.includes('miles davis') || artist.includes('john coltrane') || artist.includes('dave brubeck') ||
-        artist.includes('louis armstrong') || artist.includes('ella fitzgerald')) {
-      genres.push('jazz');
-    }
-    // Hip-hop/Rap
-    if (artist.includes('kendrick') || artist.includes('drake') || artist.includes('travis scott') || 
-        artist.includes('kanye') || artist.includes('j. cole') || artist.includes('tyler') ||
-        artist.includes('lil') || artist.includes('21 savage') || artist.includes('post malone')) {
-      genres.push('hip-hop');
-    }
-    // R&B
-    if (artist.includes('sza') || artist.includes('daniel caesar') || artist.includes('frank ocean') || 
-        artist.includes('the weeknd') || artist.includes('h.e.r.') || artist.includes('bryson tiller') ||
-        artist.includes('khalid') || artist.includes('summer walker')) {
-      genres.push('r&b');
-    }
-    // Rock
-    if (artist.includes('queen') || artist.includes('led zeppelin') || artist.includes('ac/dc') || 
-        artist.includes('guns n') || artist.includes('nirvana') || artist.includes('foo fighters') ||
-        artist.includes('green day') || artist.includes('metallica')) {
-      genres.push('rock');
-    }
-    // Ballad
-    if (artist.includes('adele') || artist.includes('ed sheeran') || artist.includes('john legend') || 
-        artist.includes('sam smith') || artist.includes('lewis capaldi') || name.includes('ballad')) {
-      genres.push('ballad');
-    }
-    // Pop (broad)
-    if (artist.includes('taylor swift') || artist.includes('dua lipa') || artist.includes('ariana grande') || 
-        artist.includes('justin bieber') || artist.includes('billie eilish') || artist.includes('harry styles') ||
-        artist.includes('olivia rodrigo') || artist.includes('doja cat') || artist.includes('bruno mars')) {
-      genres.push('pop');
+  // If Spotify genres were found, return them
+  if (genres.length > 0) {
+    return genres;
+  }
+  
+  // Fallback to artist name matching
+  const artistLower = track.artists.map(a => a.name.toLowerCase()).join(' ');
+  
+  // Check each genre's known artist list
+  for (const [genreId, artists] of Object.entries(KNOWN_ARTISTS)) {
+    for (const knownArtist of artists) {
+      if (artistLower.includes(knownArtist)) {
+        if (!genres.includes(genreId)) {
+          genres.push(genreId);
+        }
+        break; // Found a match for this genre, move to next genre
+      }
     }
   }
   
-  // Default to checking artist name patterns if still no genres
+  // Check for Korean characters (indicates K-pop)
   if (genres.length === 0) {
-    // Check if artist name looks Korean (for K-pop detection)
     const artistNames = track.artists.map(a => a.name);
     const hasKoreanPattern = artistNames.some(name => 
-      /[\uAC00-\uD7AF]/.test(name) || // Korean characters
-      name.includes('(') && name.includes(')') // Often K-pop groups have romanized + Korean
+      /[\uAC00-\uD7AF]/.test(name) // Korean Hangul characters
     );
     if (hasKoreanPattern) {
       genres.push('k-pop');
     }
   }
   
-  // Final fallback - don't default to pop, show "Unknown" instead
+  // Check track/album name patterns as last resort
   if (genres.length === 0) {
-    // Try to infer from track/album name patterns
-    const albumName = track.album?.name?.toLowerCase() || '';
-    if (albumName.includes('classical') || albumName.includes('symphony')) genres.push('classic');
-    else if (albumName.includes('jazz')) genres.push('jazz');
-    else if (albumName.includes('rock')) genres.push('rock');
-    else if (albumName.includes('hip') || albumName.includes('rap')) genres.push('hip-hop');
-    else if (albumName.includes('electronic') || albumName.includes('dance')) genres.push('edm');
-    else genres.push('pop'); // Final fallback only if nothing else matches
+    const albumName = (track.album?.name || '').toLowerCase();
+    const trackName = track.name.toLowerCase();
+    const combined = `${albumName} ${trackName}`;
+    
+    if (combined.includes('classical') || combined.includes('symphony') || combined.includes('sonata')) {
+      genres.push('classic');
+    } else if (combined.includes('jazz')) {
+      genres.push('jazz');
+    } else if (combined.includes('rock') || combined.includes('metal')) {
+      genres.push('rock');
+    } else if (combined.includes('hip hop') || combined.includes('hip-hop') || combined.includes('rap')) {
+      genres.push('hip-hop');
+    } else if (combined.includes('electronic') || combined.includes('edm') || combined.includes('dance')) {
+      genres.push('edm');
+    } else if (combined.includes('indie') || combined.includes('alternative')) {
+      genres.push('indie');
+    } else if (combined.includes('r&b') || combined.includes('rnb') || combined.includes('soul')) {
+      genres.push('r&b');
+    } else if (combined.includes('ballad')) {
+      genres.push('ballad');
+    }
+  }
+  
+  // Final fallback - still return pop but only as absolute last resort
+  if (genres.length === 0) {
+    genres.push('pop');
   }
   
   return genres;

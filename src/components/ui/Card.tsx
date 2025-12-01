@@ -47,14 +47,14 @@ interface AlbumCardProps {
 
 const cardSizes = {
   sm: 'w-24 h-32',
-  md: 'w-32 h-44',
-  lg: 'w-52 h-72',
+  md: 'w-36 h-52',
+  lg: 'w-56 h-80',
 };
 
 const imageSizes = {
   sm: 'w-20 h-20',
-  md: 'w-28 h-28',
-  lg: 'w-44 h-44',
+  md: 'w-30 h-30',
+  lg: 'w-48 h-48',
 };
 
 export function AlbumCard({
@@ -82,7 +82,7 @@ export function AlbumCard({
         group
       `}
     >
-      <div className={`${imageSizes[size]} rounded-lg overflow-hidden mb-2 shadow-lg flex-shrink-0`}>
+      <div className={`${imageSizes[size]} rounded-lg overflow-hidden mb-3 shadow-lg flex-shrink-0`}>
         <img
           src={imageUrl || '/placeholder-album.svg'}
           alt={title}
@@ -92,8 +92,8 @@ export function AlbumCard({
           }}
         />
       </div>
-      <div className="w-full flex-1 flex flex-col justify-start overflow-hidden px-1">
-        <p className={`text-center text-black font-semibold w-full ${size === 'lg' ? 'text-base' : 'text-xs'}`} style={{ 
+      <div className="w-full flex-1 flex flex-col justify-start overflow-hidden px-2">
+        <p className={`text-center text-black font-bold w-full ${size === 'lg' ? 'text-lg' : size === 'md' ? 'text-base' : 'text-xs'}`} style={{ 
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
@@ -103,7 +103,7 @@ export function AlbumCard({
           {title}
         </p>
         {artist && (
-          <p className={`text-gray-600 w-full text-center mt-1 ${size === 'lg' ? 'text-sm' : 'text-xs'}`} style={{
+          <p className={`text-gray-600 w-full text-center mt-1 ${size === 'lg' ? 'text-base' : size === 'md' ? 'text-sm' : 'text-xs'}`} style={{
             display: '-webkit-box',
             WebkitLineClamp: 1,
             WebkitBoxOrient: 'vertical',
