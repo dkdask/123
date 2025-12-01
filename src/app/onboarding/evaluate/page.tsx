@@ -106,18 +106,18 @@ const DEMO_TRACKS: { [key: string]: { name: string; artist: string; album: strin
     { name: 'A Thousand Years', artist: 'Christina Perri', album: 'The Twilight Saga' },
   ],
   'r&b': [
-    { name: 'Blinding Lights', artist: 'The Weeknd', album: 'After Hours' },
     { name: 'Call Out My Name', artist: 'The Weeknd', album: 'My Dear Melancholy,' },
     { name: 'Best Part', artist: 'Daniel Caesar', album: 'Freudian' },
-    { name: 'FYM', artist: 'SZA', album: 'Ctrl' },
+    { name: 'Kill Bill', artist: 'SZA', album: 'SOS' },
     { name: 'Good Days', artist: 'SZA', album: 'Good Days' },
+    { name: 'Earned It', artist: 'The Weeknd', album: 'Beauty Behind the Madness' },
   ],
   'classic': [
-    { name: 'Moonlight Sonata', artist: 'Beethoven', album: 'Piano Sonatas' },
-    { name: 'The Four Seasons', artist: 'Vivaldi', album: "Il cimento dell'armonia e dell'inventione" },
-    { name: 'Clair de Lune', artist: 'Debussy', album: 'Suite bergamasque' },
-    { name: 'Symphony No. 9', artist: 'Beethoven', album: 'Symphonies' },
     { name: 'Für Elise', artist: 'Beethoven', album: 'Piano Works' },
+    { name: 'Swan Lake', artist: 'Tchaikovsky', album: 'Ballet Suites' },
+    { name: 'The Nutcracker', artist: 'Tchaikovsky', album: 'Ballet Suites' },
+    { name: 'Bolero', artist: 'Ravel', album: 'Orchestral Works' },
+    { name: 'Toccata and Fugue in D minor', artist: 'Bach', album: 'Organ Works' },
   ],
 };
 

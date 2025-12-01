@@ -236,6 +236,8 @@ export function getAlbumCoverUrl(album: SpotifyAlbum, size: 'small' | 'medium' |
 }
 
 // Genre categories with icons and colors for UI
+// Note: Some genres have aliases (e.g., 'classic'/'classical', 'r&b'/'r-n-b') to match
+// the likes page genre IDs while still supporting Spotify's genre seed format
 export const GENRE_CATEGORIES = [
   { id: 'pop', name: 'Pop', color: '#FF6B6B' },
   { id: 'rock', name: 'Rock', color: '#4ECDC4' },
@@ -259,6 +261,7 @@ export const GENRE_CATEGORIES = [
   { id: 'k-pop', name: 'K-Pop', color: '#FF69B4' },
   { id: 'edm', name: 'EDM', color: '#00FFFF' },
   { id: 'ballad', name: 'Ballad', color: '#DDA0DD' },
+  // Aliases for likes page compatibility
   { id: 'classic', name: 'Classic', color: '#AA96DA' },
   { id: 'r&b', name: 'R&B', color: '#FCBAD3' },
 ];
