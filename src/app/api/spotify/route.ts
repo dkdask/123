@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   searchSpotify,
+  searchTracksWithGenres,
   getCategories,
   getRecommendations,
   getAvailableGenreSeeds,
@@ -24,6 +25,15 @@ export async function GET(request: NextRequest) {
         }
         const results = await searchSpotify(query);
         return NextResponse.json(results);
+      }
+      
+      case 'searchWithGenres': {
+        const query = searchParams.get('query');
+        if (!query) {
+          return NextResponse.json({ error: 'Query is required' }, { status: 400 });
+        }
+        const tracks = await searchTracksWithGenres(query, 10);
+        return NextResponse.json({ tracks });
       }
       
       case 'categories': {

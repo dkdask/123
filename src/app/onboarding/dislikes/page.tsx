@@ -180,7 +180,8 @@ export default function DislikesPage() {
     genre.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const searchSpotify = useCallback(async (query: string) => {
+  // Spotify API search with actual artist genres
+  const searchSpotifyWithGenres = useCallback(async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
       setShowResults(false);
@@ -189,12 +190,13 @@ export default function DislikesPage() {
     
     setIsSearching(true);
     try {
-      const response = await fetch(`/api/spotify?action=search&query=${encodeURIComponent(query)}`);
+      // Use the new API that fetches artist genres
+      const response = await fetch(`/api/spotify?action=searchWithGenres&query=${encodeURIComponent(query)}`);
       if (response.ok) {
         const data = await response.json();
-        const tracks: SpotifyTrack[] = data.tracks?.items || [];
+        const tracks = data.tracks || [];
         
-        const results: SearchResult[] = tracks.slice(0, 5).map((track) => ({
+        const results: SearchResult[] = tracks.slice(0, 5).map((track: SpotifyTrackWithGenres) => ({
           id: track.id,
           name: track.name,
           artist: track.artists.map((a) => a.name).join(', '),
@@ -219,7 +221,7 @@ export default function DislikesPage() {
     }
     
     searchTimeout.current = setTimeout(() => {
-      searchSpotify(searchQuery);
+      searchSpotifyWithGenres(searchQuery);
     }, 300);
     
     return () => {
@@ -227,7 +229,7 @@ export default function DislikesPage() {
         clearTimeout(searchTimeout.current);
       }
     };
-  }, [searchQuery, searchSpotify]);
+  }, [searchQuery, searchSpotifyWithGenres]);
 
   const handleGenreSelect = (genreId: string) => {
     setSelectedGenres((prev) =>

@@ -128,6 +128,63 @@ export async function searchSpotify(
 }
 
 /**
+ * Get artist details including genres
+ */
+export async function getArtist(artistId: string): Promise<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }> {
+  return spotifyFetch<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }>(
+    `/artists/${artistId}`
+  );
+}
+
+/**
+ * Get multiple artists details including genres
+ */
+export async function getArtists(artistIds: string[]): Promise<{ artists: Array<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }> }> {
+  const ids = artistIds.slice(0, 50).join(','); // Max 50 artists
+  return spotifyFetch<{ artists: Array<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }> }>(
+    `/artists?ids=${ids}`
+  );
+}
+
+/**
+ * Search for tracks with artist genres included
+ */
+export async function searchTracksWithGenres(
+  query: string,
+  limit: number = 10
+): Promise<Array<SpotifyTrack & { artistGenres: string[] }>> {
+  const searchResult = await searchSpotify(query, ['track'], limit);
+  const tracks = searchResult.tracks?.items || [];
+  
+  if (tracks.length === 0) return [];
+  
+  // Collect unique artist IDs
+  const artistIds = new Set<string>();
+  tracks.forEach(track => {
+    track.artists.forEach(artist => artistIds.add(artist.id));
+  });
+  
+  // Fetch artist details to get genres
+  const artistGenresMap: { [key: string]: string[] } = {};
+  try {
+    const artistsData = await getArtists(Array.from(artistIds));
+    artistsData.artists.forEach(artist => {
+      if (artist) {
+        artistGenresMap[artist.id] = artist.genres;
+      }
+    });
+  } catch (error) {
+    console.error('Failed to fetch artist genres:', error);
+  }
+  
+  // Combine tracks with their artist genres
+  return tracks.map(track => ({
+    ...track,
+    artistGenres: track.artists.flatMap(artist => artistGenresMap[artist.id] || []),
+  }));
+}
+
+/**
  * Get available genre categories
  */
 export async function getCategories(limit: number = 50): Promise<SpotifyCategory[]> {
