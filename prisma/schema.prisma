@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  preferences      UserPreferences?
+  eegSessions      EEGSession[]
+  songEEGScores    SongEEGScore[]
+  playlists        GeneratedPlaylist[]
+  contextHistory   UserContextHistory[]
+}
+
+model UserPreferences {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  likedGenres    String[] @default([])
+  dislikedGenres String[] @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EEGSession {
+  id              String   @id @default(cuid())
+  userId          String
+  songId          String
+  genre           String
+  rawDataPath     String?
+  fp1FftPath      String?
+  fp2FftPath      String?
+  biomarkersPath  String?
+  createdAt       DateTime @default(now())
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eegScore    SongEEGScore?
+}
+
+model SongEEGScore {
+  id              String   @id @default(cuid())
+  sessionId       String   @unique
+  userId          String
+  songId          String
+  genre           String
+  
+  // ERD-ERS metrics
+  erdAlpha        Float?
+  ersAlpha        Float?
+  erdBeta         Float?
+  ersBeta         Float?
+  
+  // Theta and HRV metrics
+  thetaLevel      Float?
+  sdnn            Float?
+  rmssd           Float?
+  lfHf            Float?
+  
+  // P300 metrics
+  p300Amplitude   Float?
+  
+  // Final scores
+  engagement      Float?
+  arousal         Float?
+  valence         Float?
+  overallPreference Float?
+  
+  createdAt       DateTime @default(now())
+
+  session    EEGSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model GeneratedPlaylist {
+  id        String   @id @default(cuid())
+  userId    String
+  context   String
+  songs     String[] @default([])
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserContextHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  context   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
