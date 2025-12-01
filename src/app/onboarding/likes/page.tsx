@@ -23,58 +23,18 @@ interface SearchResult {
   genres: string[];
 }
 
-// Genre categories with album covers
+// Genre categories with single album cover each
 const GENRES = [
-  { id: 'k-pop', name: 'K-POP', albums: [
-    { name: 'BE', artist: 'BTS', image: 'https://i.scdn.co/image/ab67616d0000b273f82ff6d7e7cd4e0829a10dd4' },
-    { name: 'THE ALBUM', artist: 'BLACKPINK', image: 'https://i.scdn.co/image/ab67616d0000b2736e7d9d70f5b0b0c9c5f5c5c5' },
-    { name: 'Next Level', artist: 'aespa', image: 'https://i.scdn.co/image/ab67616d0000b273a4c4c4c4c4c4c4c4c4c4c4c4' },
-  ]},
-  { id: 'indie', name: 'Indie', albums: [
-    { name: 'AM', artist: 'Arctic Monkeys', image: 'https://i.scdn.co/image/ab67616d0000b2736e7d9d70f5b0b0c9c5f5c5c5' },
-    { name: 'For Emma', artist: 'Bon Iver', image: 'https://i.scdn.co/image/ab67616d0000b273a4c4c4c4c4c4c4c4c4c4c4c4' },
-    { name: 'Oracular', artist: 'MGMT', image: 'https://i.scdn.co/image/ab67616d0000b273b5b5b5b5b5b5b5b5b5b5b5b5' },
-  ]},
-  { id: 'pop', name: 'POP', albums: [
-    { name: 'After Hours', artist: 'The Weeknd', image: 'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36' },
-    { name: 'Future Nostalgia', artist: 'Dua Lipa', image: 'https://i.scdn.co/image/ab67616d0000b273d4c4c4c4c4c4c4c4c4c4c4c4' },
-    { name: 'Midnights', artist: 'Taylor Swift', image: 'https://i.scdn.co/image/ab67616d0000b273e5e5e5e5e5e5e5e5e5e5e5e5' },
-  ]},
-  { id: 'classic', name: 'Classic', albums: [
-    { name: 'Piano Sonatas', artist: 'Beethoven', image: 'https://i.scdn.co/image/ab67616d0000b273f6f6f6f6f6f6f6f6f6f6f6f6' },
-    { name: 'The Four Seasons', artist: 'Vivaldi', image: 'https://i.scdn.co/image/ab67616d0000b273a7a7a7a7a7a7a7a7a7a7a7a7' },
-    { name: 'Suite bergamasque', artist: 'Debussy', image: 'https://i.scdn.co/image/ab67616d0000b273b8b8b8b8b8b8b8b8b8b8b8b8' },
-  ]},
-  { id: 'edm', name: 'EDM', albums: [
-    { name: 'True', artist: 'Avicii', image: 'https://i.scdn.co/image/ab67616d0000b273c9c9c9c9c9c9c9c9c9c9c9c9' },
-    { name: 'Clarity', artist: 'Zedd', image: 'https://i.scdn.co/image/ab67616d0000b273dadadadadadadadadadadada' },
-    { name: 'Animals', artist: 'Martin Garrix', image: 'https://i.scdn.co/image/ab67616d0000b273ebebebebebebebebebebeb' },
-  ]},
-  { id: 'jazz', name: 'Jazz', albums: [
-    { name: 'Kind of Blue', artist: 'Miles Davis', image: 'https://i.scdn.co/image/ab67616d0000b273fcfcfcfcfcfcfcfcfcfcfcfc' },
-    { name: 'Time Out', artist: 'Dave Brubeck', image: 'https://i.scdn.co/image/ab67616d0000b2730d0d0d0d0d0d0d0d0d0d0d0d' },
-    { name: 'A Love Supreme', artist: 'John Coltrane', image: 'https://i.scdn.co/image/ab67616d0000b2731e1e1e1e1e1e1e1e1e1e1e1e' },
-  ]},
-  { id: 'hip-hop', name: 'Hip Hop', albums: [
-    { name: 'DAMN.', artist: 'Kendrick Lamar', image: 'https://i.scdn.co/image/ab67616d0000b2732f2f2f2f2f2f2f2f2f2f2f2f' },
-    { name: 'Astroworld', artist: 'Travis Scott', image: 'https://i.scdn.co/image/ab67616d0000b2733f3f3f3f3f3f3f3f3f3f3f3f' },
-    { name: 'Scorpion', artist: 'Drake', image: 'https://i.scdn.co/image/ab67616d0000b2734f4f4f4f4f4f4f4f4f4f4f4f' },
-  ]},
-  { id: 'r&b', name: 'R&B', albums: [
-    { name: 'Freudian', artist: 'Daniel Caesar', image: 'https://i.scdn.co/image/ab67616d0000b2735f5f5f5f5f5f5f5f5f5f5f5f' },
-    { name: 'SOS', artist: 'SZA', image: 'https://i.scdn.co/image/ab67616d0000b2736f6f6f6f6f6f6f6f6f6f6f6f' },
-    { name: 'Ctrl', artist: 'SZA', image: 'https://i.scdn.co/image/ab67616d0000b2737f7f7f7f7f7f7f7f7f7f7f7f' },
-  ]},
-  { id: 'rock', name: 'Rock', albums: [
-    { name: 'A Night at the Opera', artist: 'Queen', image: 'https://i.scdn.co/image/ab67616d0000b2738f8f8f8f8f8f8f8f8f8f8f8f' },
-    { name: 'Back in Black', artist: 'AC/DC', image: 'https://i.scdn.co/image/ab67616d0000b2739f9f9f9f9f9f9f9f9f9f9f9f' },
-    { name: 'Led Zeppelin IV', artist: 'Led Zeppelin', image: 'https://i.scdn.co/image/ab67616d0000b273afafafafafafafafafafafaf' },
-  ]},
-  { id: 'ballad', name: 'Ballad', albums: [
-    { name: '21', artist: 'Adele', image: 'https://i.scdn.co/image/ab67616d0000b273bfbfbfbfbfbfbfbfbfbfbfbf' },
-    { name: '÷ (Divide)', artist: 'Ed Sheeran', image: 'https://i.scdn.co/image/ab67616d0000b273cfcfcfcfcfcfcfcfcfcfcfcf' },
-    { name: 'Love in the Future', artist: 'John Legend', image: 'https://i.scdn.co/image/ab67616d0000b273dfdfdfdfdfdfdfdfdfdfdfdf' },
-  ]},
+  { id: 'k-pop', name: 'K-POP', albumImage: 'https://i.scdn.co/image/ab67616d0000b273f82ff6d7e7cd4e0829a10dd4' },
+  { id: 'indie', name: 'Indie', albumImage: 'https://i.scdn.co/image/ab67616d0000b273ca3e0ba18e0c3b20a3d47f07' },
+  { id: 'pop', name: 'POP', albumImage: 'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36' },
+  { id: 'classic', name: 'Classic', albumImage: 'https://i.scdn.co/image/ab67616d0000b273e0e0f05d0f05d0f05d0f05d0' },
+  { id: 'edm', name: 'EDM', albumImage: 'https://i.scdn.co/image/ab67616d0000b2732b9b9b9b9b9b9b9b9b9b9b9b' },
+  { id: 'jazz', name: 'Jazz', albumImage: 'https://i.scdn.co/image/ab67616d0000b273cd9e8e9e9e9e9e9e9e9e9e9e' },
+  { id: 'hip-hop', name: 'Hip Hop', albumImage: 'https://i.scdn.co/image/ab67616d0000b2732f2f2f2f2f2f2f2f2f2f2f2f' },
+  { id: 'r&b', name: 'R&B', albumImage: 'https://i.scdn.co/image/ab67616d0000b2735f5f5f5f5f5f5f5f5f5f5f5f' },
+  { id: 'rock', name: 'Rock', albumImage: 'https://i.scdn.co/image/ab67616d0000b2738f8f8f8f8f8f8f8f8f8f8f8f' },
+  { id: 'ballad', name: 'Ballad', albumImage: 'https://i.scdn.co/image/ab67616d0000b273bfbfbfbfbfbfbfbfbfbfbfbf' },
 ];
 
 // Genre detection based on track characteristics (simplified)
@@ -416,8 +376,8 @@ export default function LikesPage() {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleGenreSelect(genre.id)}
                   className={`
-                    flex-shrink-0 w-40 rounded-2xl cursor-pointer
-                    flex flex-col items-center pb-4
+                    flex-shrink-0 w-40 h-48 rounded-2xl cursor-pointer
+                    flex flex-col items-center justify-end pb-4
                     transition-all duration-200
                     ${selectedGenres.includes(genre.id) 
                       ? 'ring-4 ring-[#C5D93D] bg-[#D4D4D4]' 
@@ -425,31 +385,16 @@ export default function LikesPage() {
                     }
                   `}
                 >
-                  {/* Album Art Stack */}
-                  <div className="relative w-full h-32 mb-3 p-2">
-                    {genre.albums.slice(0, 3).map((album, albumIndex) => (
-                      <div
-                        key={albumIndex}
-                        className="absolute rounded-lg overflow-hidden shadow-md"
-                        style={{
-                          width: '70px',
-                          height: '70px',
-                          left: `${20 + albumIndex * 15}px`,
-                          top: `${10 + albumIndex * 8}px`,
-                          zIndex: 3 - albumIndex,
-                          transform: `rotate(${(albumIndex - 1) * 5}deg)`,
-                        }}
-                      >
-                        <img
-                          src={album.image}
-                          alt={album.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${genre.id}${albumIndex}/70/70`;
-                          }}
-                        />
-                      </div>
-                    ))}
+                  {/* Single Album Cover */}
+                  <div className="w-28 h-28 rounded-lg overflow-hidden shadow-md mb-3">
+                    <img
+                      src={genre.albumImage}
+                      alt={genre.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${genre.id}/112/112`;
+                      }}
+                    />
                   </div>
                   <span className="text-black font-semibold text-lg">
                     {genre.name}
