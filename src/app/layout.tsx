@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "NeuroTune - Music that understands your mind",
+  title: "NeuroTune - EEG로 찾는 나만의 음악 취향",
   description: "Personalized music recommendations powered by EEG brain analysis. Discover music that resonates with your cognitive state.",
   keywords: ["music", "EEG", "brain", "recommendations", "personalized", "neuroscience"],
 };
@@ -25,9 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#E8E8E8] text-gray-900`}
       >
         {children}
       </body>

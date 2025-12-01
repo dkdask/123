@@ -3,14 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #E8E8E8;
+  --foreground: #1a1a1a;
+  --accent: #E8F5A3;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI', 'Noto Sans KR', Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
