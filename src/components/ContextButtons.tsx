@@ -10,13 +10,13 @@ interface ContextButtonsProps {
 }
 
 const CONTEXTS: Array<{ id: Context; label: string; icon: string; color: string }> = [
-  { id: 'study', label: 'Study', icon: '📚', color: 'from-blue-500 to-blue-600' },
-  { id: 'workout', label: 'Workout', icon: '💪', color: 'from-red-500 to-orange-500' },
-  { id: 'rest', label: 'Rest', icon: '🛋️', color: 'from-green-500 to-emerald-500' },
-  { id: 'presleep', label: 'Pre-sleep', icon: '🌙', color: 'from-indigo-500 to-purple-500' },
-  { id: 'commute', label: 'Commute', icon: '🚗', color: 'from-yellow-500 to-amber-500' },
-  { id: 'stressRelief', label: 'Stress Relief', icon: '🧘', color: 'from-teal-500 to-cyan-500' },
-  { id: 'feelingGood', label: 'Feeling Good', icon: '✨', color: 'from-pink-500 to-rose-500' },
+  { id: 'study', label: '공부', icon: '📚', color: 'from-blue-400 to-blue-500' },
+  { id: 'workout', label: '운동', icon: '💪', color: 'from-red-400 to-orange-400' },
+  { id: 'rest', label: '휴식', icon: '🛋️', color: 'from-green-400 to-emerald-400' },
+  { id: 'presleep', label: '취침 전', icon: '🌙', color: 'from-indigo-400 to-purple-400' },
+  { id: 'commute', label: '이동 중', icon: '🚗', color: 'from-yellow-400 to-amber-400' },
+  { id: 'stressRelief', label: '스트레스 해소', icon: '🧘', color: 'from-teal-400 to-cyan-400' },
+  { id: 'feelingGood', label: '기분 좋음', icon: '✨', color: 'from-pink-400 to-rose-400' },
 ];
 
 export function ContextButtons({ selectedContext, onSelectContext }: ContextButtonsProps) {
@@ -35,7 +35,7 @@ export function ContextButtons({ selectedContext, onSelectContext }: ContextButt
             transition-all duration-200
             ${selectedContext === context.id
               ? `bg-gradient-to-r ${context.color} text-white shadow-lg`
-              : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700/50'
+              : 'bg-white/80 text-gray-700 hover:bg-white border border-gray-300'
             }
           `}
         >

@@ -23,11 +23,11 @@ export function Card({
       whileTap={onClick ? { scale: 0.98 } : undefined}
       onClick={onClick}
       className={`
-        bg-gray-800/50 backdrop-blur-sm
+        bg-white/80 backdrop-blur-sm
         rounded-2xl
-        border ${isSelected ? 'border-purple-500 ring-2 ring-purple-500/50' : 'border-gray-700/50'}
+        border ${isSelected ? 'border-[#C5D93D] ring-2 ring-[#C5D93D]/50' : 'border-gray-200'}
         ${onClick ? 'cursor-pointer' : ''}
-        ${hoverable ? 'transition-shadow hover:shadow-xl hover:shadow-purple-500/10' : ''}
+        ${hoverable ? 'transition-shadow hover:shadow-xl hover:shadow-gray-300/30' : ''}
         ${className}
       `}
     >
@@ -46,9 +46,9 @@ interface AlbumCardProps {
 }
 
 const cardSizes = {
-  sm: 'w-24 h-24',
-  md: 'w-32 h-32',
-  lg: 'w-48 h-48',
+  sm: 'w-24 h-32',
+  md: 'w-32 h-40',
+  lg: 'w-48 h-60',
 };
 
 const imageSizes = {
@@ -72,17 +72,17 @@ export function AlbumCard({
       onClick={onClick}
       className={`
         ${cardSizes[size]}
-        flex flex-col items-center justify-center p-2
-        bg-gray-800/60 backdrop-blur-sm
+        flex flex-col items-center justify-start p-3
+        bg-[#D4D4D4] backdrop-blur-sm
         rounded-xl
-        border-2 ${isSelected ? 'border-purple-500 ring-2 ring-purple-500/50' : 'border-transparent'}
+        border-2 ${isSelected ? 'border-[#C5D93D] ring-2 ring-[#C5D93D]/50' : 'border-transparent'}
         cursor-pointer
         transition-all duration-200
-        hover:bg-gray-700/60
+        hover:bg-[#C8C8C8]
         group
       `}
     >
-      <div className={`${imageSizes[size]} rounded-lg overflow-hidden mb-2 shadow-lg`}>
+      <div className={`${imageSizes[size]} rounded-lg overflow-hidden mb-2 shadow-lg flex-shrink-0`}>
         <img
           src={imageUrl || '/placeholder-album.svg'}
           alt={title}
@@ -92,21 +92,34 @@ export function AlbumCard({
           }}
         />
       </div>
-      <p className="text-xs text-center text-white font-medium truncate w-full px-1">
-        {title}
-      </p>
-      {artist && (
-        <p className="text-xs text-gray-400 truncate w-full text-center">
-          {artist}
+      <div className="w-full flex-1 flex flex-col justify-start overflow-hidden">
+        <p className={`text-center text-black font-medium w-full ${size === 'lg' ? 'text-sm' : 'text-xs'}`} style={{ 
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          lineHeight: '1.2',
+        }}>
+          {title}
         </p>
-      )}
+        {artist && (
+          <p className={`text-gray-600 w-full text-center mt-1 ${size === 'lg' ? 'text-xs' : 'text-xs'}`} style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}>
+            {artist}
+          </p>
+        )}
+      </div>
       {isSelected && (
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute top-1 right-1 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center"
+          className="absolute top-1 right-1 w-5 h-5 bg-[#C5D93D] rounded-full flex items-center justify-center"
         >
-          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         </motion.div>
@@ -136,7 +149,7 @@ export function GenreCard({
         rounded-xl
         cursor-pointer
         transition-all duration-200
-        border-2 ${isSelected ? 'border-white ring-2 ring-white/50' : 'border-transparent'}
+        border-2 ${isSelected ? 'border-[#C5D93D] ring-2 ring-[#C5D93D]/50' : 'border-transparent'}
         relative overflow-hidden
       `}
       style={{ backgroundColor: color }}
@@ -148,9 +161,9 @@ export function GenreCard({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+          className="absolute top-2 right-2 w-6 h-6 bg-[#C5D93D] rounded-full flex items-center justify-center"
         >
-          <svg className="w-4 h-4" style={{ color }} fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         </motion.div>

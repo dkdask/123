@@ -37,47 +37,131 @@ const GENRES = [
   { id: 'ballad', name: 'Ballad', albumImage: 'https://i.scdn.co/image/ab67616d0000b273bfbfbfbfbfbfbfbfbfbfbfbf' },
 ];
 
-// Genre detection based on track characteristics (simplified)
-const detectGenreFromTrack = (track: SpotifyTrack): string[] => {
-  const name = track.name.toLowerCase();
-  const artist = track.artists.map(a => a.name.toLowerCase()).join(' ');
+// Genre mapping from Spotify genre strings to our genre IDs
+const mapSpotifyGenreToId = (spotifyGenre: string): string | null => {
+  const genre = spotifyGenre.toLowerCase();
+  
+  if (genre.includes('k-pop') || genre.includes('korean pop') || genre.includes('kpop')) return 'k-pop';
+  if (genre.includes('indie') || genre.includes('alternative')) return 'indie';
+  if (genre.includes('classical') || genre.includes('orchestra') || genre.includes('symphony')) return 'classic';
+  if (genre.includes('edm') || genre.includes('electronic') || genre.includes('house') || genre.includes('techno') || genre.includes('dance')) return 'edm';
+  if (genre.includes('jazz') || genre.includes('blues')) return 'jazz';
+  if (genre.includes('hip hop') || genre.includes('hip-hop') || genre.includes('rap') || genre.includes('trap')) return 'hip-hop';
+  if (genre.includes('r&b') || genre.includes('rnb') || genre.includes('soul') || genre.includes('neo soul')) return 'r&b';
+  if (genre.includes('rock') || genre.includes('metal') || genre.includes('punk') || genre.includes('grunge')) return 'rock';
+  if (genre.includes('ballad') || genre.includes('acoustic') || genre.includes('singer-songwriter')) return 'ballad';
+  if (genre.includes('pop') || genre.includes('mainstream')) return 'pop';
+  
+  return null;
+};
+
+// Extended interface for Spotify track with artist genres
+interface SpotifyTrackWithGenres extends SpotifyTrack {
+  artistGenres?: string[];
+}
+
+// Genre detection using Spotify's actual artist genres
+const detectGenreFromTrack = (track: SpotifyTrackWithGenres): string[] => {
   const genres: string[] = [];
   
-  // Simple keyword-based detection
-  if (artist.includes('bts') || artist.includes('blackpink') || artist.includes('aespa') || artist.includes('twice') || artist.includes('exo')) {
-    genres.push('k-pop');
-  }
-  if (artist.includes('arctic monkeys') || artist.includes('bon iver') || artist.includes('tame impala')) {
-    genres.push('indie');
-  }
-  if (artist.includes('beethoven') || artist.includes('mozart') || artist.includes('bach') || artist.includes('vivaldi')) {
-    genres.push('classic');
-  }
-  if (artist.includes('avicii') || artist.includes('deadmau5') || artist.includes('martin garrix') || artist.includes('zedd')) {
-    genres.push('edm');
-  }
-  if (artist.includes('miles davis') || artist.includes('john coltrane') || artist.includes('dave brubeck')) {
-    genres.push('jazz');
-  }
-  if (artist.includes('kendrick') || artist.includes('drake') || artist.includes('travis scott') || artist.includes('kanye')) {
-    genres.push('hip-hop');
-  }
-  if (artist.includes('sza') || artist.includes('daniel caesar') || artist.includes('frank ocean') || artist.includes('the weeknd')) {
-    genres.push('r&b');
-  }
-  if (artist.includes('queen') || artist.includes('led zeppelin') || artist.includes('ac/dc') || artist.includes('guns n')) {
-    genres.push('rock');
-  }
-  if (artist.includes('adele') || artist.includes('ed sheeran') || artist.includes('john legend') || name.includes('ballad')) {
-    genres.push('ballad');
-  }
-  if (artist.includes('taylor swift') || artist.includes('dua lipa') || artist.includes('ariana grande') || artist.includes('justin bieber')) {
-    genres.push('pop');
+  // If we have artist genres from Spotify API, use those
+  if (track.artistGenres && track.artistGenres.length > 0) {
+    for (const spotifyGenre of track.artistGenres) {
+      const mappedGenre = mapSpotifyGenreToId(spotifyGenre);
+      if (mappedGenre && !genres.includes(mappedGenre)) {
+        genres.push(mappedGenre);
+      }
+    }
   }
   
-  // Default to pop if no genre detected
+  // Fallback to keyword-based detection if no genres found
   if (genres.length === 0) {
-    genres.push('pop');
+    const artist = track.artists.map(a => a.name.toLowerCase()).join(' ');
+    const name = track.name.toLowerCase();
+    
+    // K-pop artists
+    if (artist.includes('bts') || artist.includes('blackpink') || artist.includes('aespa') || 
+        artist.includes('twice') || artist.includes('exo') || artist.includes('nct') ||
+        artist.includes('stray kids') || artist.includes('itzy') || artist.includes('ive') ||
+        artist.includes('newjeans') || artist.includes('seventeen') || artist.includes('txt') ||
+        artist.includes('enhypen') || artist.includes('le sserafim') || artist.includes('red velvet')) {
+      genres.push('k-pop');
+    }
+    // Indie artists
+    if (artist.includes('arctic monkeys') || artist.includes('bon iver') || artist.includes('tame impala') ||
+        artist.includes('radiohead') || artist.includes('the strokes') || artist.includes('vampire weekend')) {
+      genres.push('indie');
+    }
+    // Classical
+    if (artist.includes('beethoven') || artist.includes('mozart') || artist.includes('bach') || 
+        artist.includes('vivaldi') || artist.includes('chopin') || artist.includes('tchaikovsky')) {
+      genres.push('classic');
+    }
+    // EDM
+    if (artist.includes('avicii') || artist.includes('deadmau5') || artist.includes('martin garrix') || 
+        artist.includes('zedd') || artist.includes('calvin harris') || artist.includes('marshmello') ||
+        artist.includes('david guetta') || artist.includes('tiesto')) {
+      genres.push('edm');
+    }
+    // Jazz
+    if (artist.includes('miles davis') || artist.includes('john coltrane') || artist.includes('dave brubeck') ||
+        artist.includes('louis armstrong') || artist.includes('ella fitzgerald')) {
+      genres.push('jazz');
+    }
+    // Hip-hop/Rap
+    if (artist.includes('kendrick') || artist.includes('drake') || artist.includes('travis scott') || 
+        artist.includes('kanye') || artist.includes('j. cole') || artist.includes('tyler') ||
+        artist.includes('lil') || artist.includes('21 savage') || artist.includes('post malone')) {
+      genres.push('hip-hop');
+    }
+    // R&B
+    if (artist.includes('sza') || artist.includes('daniel caesar') || artist.includes('frank ocean') || 
+        artist.includes('the weeknd') || artist.includes('h.e.r.') || artist.includes('bryson tiller') ||
+        artist.includes('khalid') || artist.includes('summer walker')) {
+      genres.push('r&b');
+    }
+    // Rock
+    if (artist.includes('queen') || artist.includes('led zeppelin') || artist.includes('ac/dc') || 
+        artist.includes('guns n') || artist.includes('nirvana') || artist.includes('foo fighters') ||
+        artist.includes('green day') || artist.includes('metallica')) {
+      genres.push('rock');
+    }
+    // Ballad
+    if (artist.includes('adele') || artist.includes('ed sheeran') || artist.includes('john legend') || 
+        artist.includes('sam smith') || artist.includes('lewis capaldi') || name.includes('ballad')) {
+      genres.push('ballad');
+    }
+    // Pop (broad)
+    if (artist.includes('taylor swift') || artist.includes('dua lipa') || artist.includes('ariana grande') || 
+        artist.includes('justin bieber') || artist.includes('billie eilish') || artist.includes('harry styles') ||
+        artist.includes('olivia rodrigo') || artist.includes('doja cat') || artist.includes('bruno mars')) {
+      genres.push('pop');
+    }
+  }
+  
+  // Default to checking artist name patterns if still no genres
+  if (genres.length === 0) {
+    // Check if artist name looks Korean (for K-pop detection)
+    const artistNames = track.artists.map(a => a.name);
+    const hasKoreanPattern = artistNames.some(name => 
+      /[\uAC00-\uD7AF]/.test(name) || // Korean characters
+      name.includes('(') && name.includes(')') // Often K-pop groups have romanized + Korean
+    );
+    if (hasKoreanPattern) {
+      genres.push('k-pop');
+    }
+  }
+  
+  // Final fallback - don't default to pop, show "Unknown" instead
+  if (genres.length === 0) {
+    // Try to infer from track/album name patterns
+    const albumName = track.album?.name?.toLowerCase() || '';
+    if (albumName.includes('classical') || albumName.includes('symphony')) genres.push('classic');
+    else if (albumName.includes('jazz')) genres.push('jazz');
+    else if (albumName.includes('rock')) genres.push('rock');
+    else if (albumName.includes('hip') || albumName.includes('rap')) genres.push('hip-hop');
+    else if (albumName.includes('electronic') || albumName.includes('dance')) genres.push('edm');
+    else genres.push('pop'); // Final fallback only if nothing else matches
   }
   
   return genres;
@@ -90,7 +174,6 @@ export default function LikesPage() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -173,25 +256,6 @@ export default function LikesPage() {
     localStorage.setItem('likedGenres', JSON.stringify(selectedGenres));
     router.push('/onboarding/dislikes');
   };
-
-  const handleSlideChange = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setCurrentSlide((prev) => Math.max(0, prev - 1));
-    } else {
-      setCurrentSlide((prev) => Math.min(filteredGenres.length - 1, prev + 1));
-    }
-  };
-
-  // Scroll to current slide
-  useEffect(() => {
-    if (sliderRef.current) {
-      const slideWidth = 176; // w-40 + gap
-      sliderRef.current.scrollTo({
-        left: currentSlide * slideWidth,
-        behavior: 'smooth',
-      });
-    }
-  }, [currentSlide]);
 
   return (
     <div className="min-h-screen bg-[#E8E8E8] flex flex-col relative overflow-hidden">
@@ -340,94 +404,80 @@ export default function LikesPage() {
         )}
       </div>
 
-      {/* Genre Cards with Album Covers - Horizontal Scroll with Slider */}
-      <div className="flex-1 flex flex-col justify-center z-10">
-        <div className="relative">
-          {/* Previous Button */}
-          <button
-            onClick={() => handleSlideChange('prev')}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-colors"
-            disabled={currentSlide === 0}
+      {/* Genre Cards with Album Covers - Horizontal Scroll with Scrollbar */}
+      <div className="flex-1 flex flex-col justify-center z-10 px-8">
+        {/* Slider with visible scrollbar */}
+        <div
+          ref={sliderRef}
+          className="w-full overflow-x-auto py-8 scroll-smooth custom-scrollbar"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#C5D93D #D4D4D4',
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex gap-6 px-4"
+            style={{ minWidth: 'max-content' }}
           >
-            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          {/* Slider */}
-          <div
-            ref={sliderRef}
-            className="w-full overflow-x-auto scrollbar-hide py-8 scroll-smooth"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex gap-6 px-16"
-              style={{ minWidth: 'max-content' }}
-            >
-              {filteredGenres.map((genre, index) => (
-                <motion.div
-                  key={genre.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + index * 0.05 }}
-                  whileHover={{ scale: 1.02, y: -4 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleGenreSelect(genre.id)}
-                  className={`
-                    flex-shrink-0 w-40 h-48 rounded-2xl cursor-pointer
-                    flex flex-col items-center justify-end pb-4
-                    transition-all duration-200
-                    ${selectedGenres.includes(genre.id) 
-                      ? 'ring-4 ring-[#C5D93D] bg-[#D4D4D4]' 
-                      : 'bg-[#D4D4D4] hover:bg-[#C8C8C8]'
-                    }
-                  `}
-                >
-                  {/* Single Album Cover */}
-                  <div className="w-28 h-28 rounded-lg overflow-hidden shadow-md mb-3">
-                    <img
-                      src={genre.albumImage}
-                      alt={genre.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${genre.id}/112/112`;
-                      }}
-                    />
-                  </div>
-                  <span className="text-black font-semibold text-lg">
-                    {genre.name}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Next Button */}
-          <button
-            onClick={() => handleSlideChange('next')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-colors"
-            disabled={currentSlide >= filteredGenres.length - 1}
-          >
-            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+            {filteredGenres.map((genre, index) => (
+              <motion.div
+                key={genre.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.05 }}
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleGenreSelect(genre.id)}
+                className={`
+                  flex-shrink-0 w-40 h-48 rounded-2xl cursor-pointer
+                  flex flex-col items-center justify-end pb-4
+                  transition-all duration-200
+                  ${selectedGenres.includes(genre.id) 
+                    ? 'ring-4 ring-[#C5D93D] bg-[#D4D4D4]' 
+                    : 'bg-[#D4D4D4] hover:bg-[#C8C8C8]'
+                  }
+                `}
+              >
+                {/* Single Album Cover */}
+                <div className="w-28 h-28 rounded-lg overflow-hidden shadow-md mb-3">
+                  <img
+                    src={genre.albumImage}
+                    alt={genre.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${genre.id}/112/112`;
+                    }}
+                  />
+                </div>
+                <span className="text-black font-semibold text-lg">
+                  {genre.name}
+                </span>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-
-        {/* Slider Indicator */}
-        <div className="flex justify-center gap-2 mt-4">
-          {filteredGenres.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                index === currentSlide ? 'bg-[#C5D93D]' : 'bg-gray-400'
-              }`}
-            />
-          ))}
-        </div>
+        
+        {/* Custom scrollbar styles */}
+        <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #D4D4D4;
+            border-radius: 4px;
+            margin: 0 20px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #C5D93D;
+            border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #B0C530;
+          }
+        `}</style>
       </div>
 
       {/* Bottom Navigation */}
