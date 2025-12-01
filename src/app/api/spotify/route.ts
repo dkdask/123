@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   searchSpotify,
+  searchTracksWithGenres,
   getCategories,
   getRecommendations,
   getAvailableGenreSeeds,
@@ -8,6 +9,7 @@ import {
   getRandomTracksFromGenre,
   getNewReleases,
   GENRE_CATEGORIES,
+  getSpotifyGenreSeed,
 } from '@/lib/spotify';
 
 export async function GET(request: NextRequest) {
@@ -25,6 +27,15 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(results);
       }
       
+      case 'searchWithGenres': {
+        const query = searchParams.get('query');
+        if (!query) {
+          return NextResponse.json({ error: 'Query is required' }, { status: 400 });
+        }
+        const tracks = await searchTracksWithGenres(query, 10);
+        return NextResponse.json({ tracks });
+      }
+      
       case 'categories': {
         const categories = await getCategories();
         return NextResponse.json({ categories });
@@ -40,7 +51,9 @@ export async function GET(request: NextRequest) {
         if (seedGenres.length === 0) {
           return NextResponse.json({ error: 'At least one genre is required' }, { status: 400 });
         }
-        const tracks = await getRecommendations(seedGenres);
+        // Map user genre IDs to Spotify genre seeds
+        const mappedGenres = seedGenres.map(getSpotifyGenreSeed);
+        const tracks = await getRecommendations(mappedGenres);
         return NextResponse.json({ tracks });
       }
       
@@ -49,7 +62,9 @@ export async function GET(request: NextRequest) {
         if (!genre) {
           return NextResponse.json({ error: 'Genre is required' }, { status: 400 });
         }
-        const tracks = await getTracksByGenre(genre);
+        // Map user genre ID to Spotify genre seed
+        const spotifyGenre = getSpotifyGenreSeed(genre);
+        const tracks = await getTracksByGenre(spotifyGenre);
         return NextResponse.json({ tracks });
       }
       
@@ -59,7 +74,9 @@ export async function GET(request: NextRequest) {
         if (!genre) {
           return NextResponse.json({ error: 'Genre is required' }, { status: 400 });
         }
-        const tracks = await getRandomTracksFromGenre(genre, count);
+        // Map user genre ID to Spotify genre seed
+        const spotifyGenre = getSpotifyGenreSeed(genre);
+        const tracks = await getRandomTracksFromGenre(spotifyGenre, count);
         return NextResponse.json({ tracks });
       }
       
@@ -71,7 +88,7 @@ export async function GET(request: NextRequest) {
       default:
         return NextResponse.json({ 
           error: 'Invalid action',
-          availableActions: ['search', 'categories', 'genres', 'recommendations', 'tracksByGenre', 'randomTracks', 'newReleases']
+          availableActions: ['search', 'searchWithGenres', 'categories', 'genres', 'recommendations', 'tracksByGenre', 'randomTracks', 'newReleases']
         }, { status: 400 });
     }
   } catch (error) {

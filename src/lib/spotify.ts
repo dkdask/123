@@ -128,6 +128,70 @@ export async function searchSpotify(
 }
 
 /**
+ * Artist details interface from Spotify API
+ */
+interface SpotifyArtist {
+  id: string;
+  name: string;
+  genres: string[];
+  images: Array<{ url: string }>;
+}
+
+/**
+ * Get artist details including genres
+ */
+export async function getArtist(artistId: string): Promise<SpotifyArtist> {
+  return spotifyFetch<SpotifyArtist>(`/artists/${artistId}`);
+}
+
+/**
+ * Get multiple artists details including genres.
+ * Note: Spotify API may return null for artists that don't exist or have been removed.
+ */
+export async function getArtists(artistIds: string[]): Promise<{ artists: Array<SpotifyArtist | null> }> {
+  const ids = artistIds.slice(0, 50).join(','); // Max 50 artists
+  return spotifyFetch<{ artists: Array<SpotifyArtist | null> }>(`/artists?ids=${ids}`);
+}
+
+/**
+ * Search for tracks with artist genres included
+ */
+export async function searchTracksWithGenres(
+  query: string,
+  limit: number = 10
+): Promise<Array<SpotifyTrack & { artistGenres: string[] }>> {
+  const searchResult = await searchSpotify(query, ['track'], limit);
+  const tracks = searchResult.tracks?.items || [];
+  
+  if (tracks.length === 0) return [];
+  
+  // Collect unique artist IDs
+  const artistIds = new Set<string>();
+  tracks.forEach(track => {
+    track.artists.forEach(artist => artistIds.add(artist.id));
+  });
+  
+  // Fetch artist details to get genres
+  const artistGenresMap: { [key: string]: string[] } = {};
+  try {
+    const artistsData = await getArtists(Array.from(artistIds));
+    artistsData.artists.forEach(artist => {
+      if (artist) {
+        artistGenresMap[artist.id] = artist.genres;
+      }
+    });
+  } catch (error) {
+    console.error('Failed to fetch artist genres:', error);
+  }
+  
+  // Combine tracks with their artist genres
+  return tracks.map(track => ({
+    ...track,
+    artistGenres: track.artists.flatMap(artist => artistGenresMap[artist.id] || []),
+  }));
+}
+
+/**
  * Get available genre categories
  */
 export async function getCategories(limit: number = 50): Promise<SpotifyCategory[]> {
@@ -236,6 +300,8 @@ export function getAlbumCoverUrl(album: SpotifyAlbum, size: 'small' | 'medium' |
 }
 
 // Genre categories with icons and colors for UI
+// Note: Some genres have aliases (e.g., 'classic'/'classical', 'r&b'/'r-n-b') to match
+// the likes page genre IDs while still supporting Spotify's genre seed format
 export const GENRE_CATEGORIES = [
   { id: 'pop', name: 'Pop', color: '#FF6B6B' },
   { id: 'rock', name: 'Rock', color: '#4ECDC4' },
@@ -257,6 +323,49 @@ export const GENRE_CATEGORIES = [
   { id: 'disco', name: 'Disco', color: '#F8B500' },
   { id: 'ambient', name: 'Ambient', color: '#96CEB4' },
   { id: 'k-pop', name: 'K-Pop', color: '#FF69B4' },
+  { id: 'edm', name: 'EDM', color: '#00FFFF' },
+  { id: 'ballad', name: 'Ballad', color: '#DDA0DD' },
+  // Aliases for likes page compatibility
+  { id: 'classic', name: 'Classic', color: '#AA96DA' },
+  { id: 'r&b', name: 'R&B', color: '#FCBAD3' },
 ];
+
+/**
+ * Map user-selected genre IDs to valid Spotify genre seeds
+ * Some genre IDs used in the UI don't match Spotify's available genre seeds
+ */
+export const GENRE_TO_SPOTIFY_SEED: { [key: string]: string } = {
+  'k-pop': 'k-pop',
+  'indie': 'indie',
+  'pop': 'pop',
+  'classic': 'classical',
+  'classical': 'classical',
+  'edm': 'edm',
+  'jazz': 'jazz',
+  'hip-hop': 'hip-hop',
+  'r&b': 'r-n-b',
+  'r-n-b': 'r-n-b',
+  'rock': 'rock',
+  'ballad': 'pop', // Ballad is not a Spotify genre, use pop as fallback
+  'electronic': 'electronic',
+  'country': 'country',
+  'latin': 'latin',
+  'metal': 'metal',
+  'alternative': 'alternative',
+  'folk': 'folk',
+  'blues': 'blues',
+  'reggae': 'reggae',
+  'punk': 'punk',
+  'soul': 'soul',
+  'disco': 'disco',
+  'ambient': 'ambient',
+};
+
+/**
+ * Get the Spotify genre seed for a given genre ID
+ */
+export function getSpotifyGenreSeed(genreId: string): string {
+  return GENRE_TO_SPOTIFY_SEED[genreId] || genreId;
+}
 
 export type { SpotifyTrack, SpotifyAlbum, SpotifyCategory, SpotifyAudioFeatures, SpotifySearchResult };

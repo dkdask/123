@@ -21,7 +21,7 @@ interface PlaylistDisplayProps {
 
 export function PlaylistDisplay({
   tracks,
-  title = 'Your Playlist',
+  title = '내 플레이리스트',
   context,
   isLoading = false,
   onTrackClick,
@@ -30,32 +30,32 @@ export function PlaylistDisplay({
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-xl font-bold text-white">{title}</h3>
+          <h3 className="text-xl font-bold text-black">{title}</h3>
           {context && (
-            <p className="text-sm text-gray-400">
-              Personalized for your {context} session
+            <p className="text-sm text-gray-600">
+              {context} 세션에 맞춤
             </p>
           )}
         </div>
-        <span className="text-sm text-gray-400">{tracks.length} tracks</span>
+        <span className="text-sm text-gray-500">{tracks.length}곡</span>
       </div>
 
-      <div className="bg-gray-800/30 rounded-2xl border border-gray-700/50 overflow-hidden">
+      <div className="bg-white/80 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full"
+              className="w-8 h-8 border-2 border-[#C5D93D] border-t-transparent rounded-full"
             />
           </div>
         ) : tracks.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-400">No tracks yet. Select a context to generate your playlist!</p>
+            <p className="text-gray-500">플레이리스트가 비어있습니다. 상황을 선택하여 플레이리스트를 생성하세요!</p>
           </div>
         ) : (
           <AnimatePresence>
-            <div className="divide-y divide-gray-700/50">
+            <div className="divide-y divide-gray-200">
               {tracks.map((track, index) => (
                 <motion.div
                   key={track.id}
@@ -64,21 +64,21 @@ export function PlaylistDisplay({
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => onTrackClick?.(track)}
-                  className="flex items-center gap-4 p-4 hover:bg-gray-700/30 transition-colors cursor-pointer group"
+                  className="flex items-center gap-4 p-4 hover:bg-gray-100 transition-colors cursor-pointer group"
                 >
-                  <span className="text-gray-500 w-6 text-center text-sm group-hover:hidden">
+                  <span className="text-gray-400 w-6 text-center text-sm group-hover:hidden">
                     {index + 1}
                   </span>
                   <motion.span
                     initial={{ opacity: 0 }}
                     className="hidden group-hover:flex w-6 items-center justify-center"
                   >
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#C5D93D]" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </motion.span>
                   
-                  <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden shadow-md flex-shrink-0">
                     <img
                       src={track.albumImage || '/placeholder-album.svg'}
                       alt={track.name}
@@ -90,12 +90,12 @@ export function PlaylistDisplay({
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">{track.name}</p>
-                    <p className="text-gray-400 text-sm truncate">{track.artist}</p>
+                    <p className="text-black font-medium truncate">{track.name}</p>
+                    <p className="text-gray-500 text-sm truncate">{track.artist}</p>
                   </div>
                   
                   {track.duration && (
-                    <span className="text-gray-500 text-sm">{track.duration}</span>
+                    <span className="text-gray-400 text-sm">{track.duration}</span>
                   )}
                   
                   <motion.button
@@ -105,7 +105,7 @@ export function PlaylistDisplay({
                       e.stopPropagation();
                       // Add to liked tracks
                     }}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-600/50 rounded-full"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-200 rounded-full"
                   >
                     <svg className="w-5 h-5 text-gray-400 hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

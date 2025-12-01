@@ -176,30 +176,50 @@ export default function MainPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900">
+    <div className="min-h-screen bg-[#E8E8E8] relative overflow-hidden">
+      {/* Decorative yellow-green blob shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <svg className="absolute -left-32 top-0 h-full w-[500px]" viewBox="0 0 400 800" fill="none">
+          <path
+            d="M-100 0 C 200 200, 300 400, 150 600 C 0 800, -100 800, -100 800 L -100 0"
+            fill="#E8F5A3"
+            opacity="0.7"
+          />
+        </svg>
+        <svg className="absolute right-0 top-1/4 w-[400px] h-[500px]" viewBox="0 0 400 500" fill="none">
+          <path
+            d="M200 0 C 400 100, 450 250, 300 400 C 150 550, 400 500, 400 500 L 400 0 L 200 0"
+            fill="#E8F5A3"
+            opacity="0.5"
+          />
+        </svg>
+        <div className="absolute top-32 right-1/4 w-40 h-40 rounded-full bg-[#E8F5A3] opacity-50" />
+        <div className="absolute bottom-40 left-20 w-24 h-24 rounded-full bg-[#E8F5A3] opacity-60" />
+      </div>
+
       {/* Sidebar */}
       <Sidebar
-        moodState={eegScores ? (eegScores.valence > 0.6 ? 'Positive & Engaged' : 'Calm & Focused') : 'No data yet'}
-        emotionalProfile={eegScores ? 'Based on your EEG analysis' : 'Connect EEG device to begin'}
+        moodState={eegScores ? (eegScores.valence > 0.6 ? '긍정적 & 몰입' : '평온 & 집중') : '데이터 없음'}
+        emotionalProfile={eegScores ? 'EEG 분석 기반' : 'EEG 기기를 연결하세요'}
         recentScores={eegScores || undefined}
         hrvData={eegScores ? { sdnn: 45.3, rmssd: 38.7, lfHf: 1.2 } : undefined}
       />
 
       {/* Main Content */}
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen relative z-10">
         {/* Header */}
         <header className="p-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-black">
               Welcome to{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+              <span className="text-[#8B9A2B]">
                 NeuroTune
               </span>
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-600 text-sm mt-1">
               {likedGenres.length > 0 
-                ? `Personalized for your taste in ${likedGenres.slice(0, 3).map(g => GENRE_CATEGORIES.find(c => c.id === g)?.name).join(', ')}`
-                : 'Music that understands your mind'
+                ? `${likedGenres.slice(0, 3).map(g => GENRE_CATEGORIES.find(c => c.id === g)?.name).join(', ')} 취향에 맞춤`
+                : '마음을 이해하는 음악'
               }
             </p>
           </div>
@@ -209,17 +229,17 @@ export default function MainPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push('/onboarding/likes')}
-              className="px-4 py-2 bg-gray-800/50 rounded-xl text-gray-300 text-sm hover:bg-gray-700/50 border border-gray-700/50"
+              className="px-4 py-2 bg-white/80 rounded-xl text-gray-700 text-sm hover:bg-white border border-gray-300"
             >
-              Edit Preferences
+              취향 수정
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push('/onboarding/connect')}
-              className="px-4 py-2 bg-purple-600 rounded-xl text-white text-sm hover:bg-purple-700"
+              className="px-4 py-2 bg-[#C5D93D] rounded-xl text-black text-sm hover:bg-[#B0C530] font-medium"
             >
-              Connect EEG
+              EEG 연결
             </motion.button>
           </div>
         </header>
@@ -233,7 +253,7 @@ export default function MainPage() {
           >
             <AlbumSlider
               albums={albums}
-              title="Recommended for You"
+              title="맞춤 추천"
               autoScroll={true}
               scrollSpeed={50}
             />
@@ -247,8 +267,8 @@ export default function MainPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              What are you doing?
+            <h2 className="text-xl font-bold text-black mb-6 text-center">
+              지금 뭐하고 있어요?
             </h2>
             <ContextButtons
               selectedContext={selectedContext}
@@ -266,7 +286,7 @@ export default function MainPage() {
           >
             <PlaylistDisplay
               tracks={playlist}
-              title={selectedContext ? `${selectedContext.charAt(0).toUpperCase() + selectedContext.slice(1)} Playlist` : 'Your Playlist'}
+              title={selectedContext ? `${selectedContext.charAt(0).toUpperCase() + selectedContext.slice(1)} 플레이리스트` : '내 플레이리스트'}
               context={selectedContext || undefined}
               isLoading={isLoadingPlaylist}
               onTrackClick={(track) => console.log('Playing:', track)}
@@ -275,9 +295,9 @@ export default function MainPage() {
         </section>
 
         {/* Footer */}
-        <footer className="p-6 text-center text-gray-500 text-sm">
-          <p>NeuroTune - Music that understands your mind</p>
-          <p className="mt-1">© 2024 NeuroTune. Powered by EEG analysis.</p>
+        <footer className="p-6 text-center text-gray-600 text-sm">
+          <p>NeuroTune - 마음을 이해하는 음악</p>
+          <p className="mt-1">© 2024 NeuroTune. EEG 분석 기반.</p>
         </footer>
       </div>
     </div>
