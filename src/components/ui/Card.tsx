@@ -53,7 +53,7 @@ const cardSizes = {
 
 const imageSizes = {
   sm: 'w-20 h-20',
-  md: 'w-30 h-30',
+  md: 'w-32 h-32',
   lg: 'w-48 h-48',
 };
 
