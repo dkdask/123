@@ -128,22 +128,29 @@ export async function searchSpotify(
 }
 
 /**
- * Get artist details including genres
+ * Artist details interface from Spotify API
  */
-export async function getArtist(artistId: string): Promise<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }> {
-  return spotifyFetch<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }>(
-    `/artists/${artistId}`
-  );
+interface SpotifyArtist {
+  id: string;
+  name: string;
+  genres: string[];
+  images: Array<{ url: string }>;
 }
 
 /**
- * Get multiple artists details including genres
+ * Get artist details including genres
  */
-export async function getArtists(artistIds: string[]): Promise<{ artists: Array<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }> }> {
+export async function getArtist(artistId: string): Promise<SpotifyArtist> {
+  return spotifyFetch<SpotifyArtist>(`/artists/${artistId}`);
+}
+
+/**
+ * Get multiple artists details including genres.
+ * Note: Spotify API may return null for artists that don't exist or have been removed.
+ */
+export async function getArtists(artistIds: string[]): Promise<{ artists: Array<SpotifyArtist | null> }> {
   const ids = artistIds.slice(0, 50).join(','); // Max 50 artists
-  return spotifyFetch<{ artists: Array<{ id: string; name: string; genres: string[]; images: Array<{ url: string }> }> }>(
-    `/artists?ids=${ids}`
-  );
+  return spotifyFetch<{ artists: Array<SpotifyArtist | null> }>(`/artists?ids=${ids}`);
 }
 
 /**

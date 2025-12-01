@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
       default:
         return NextResponse.json({ 
           error: 'Invalid action',
-          availableActions: ['search', 'categories', 'genres', 'recommendations', 'tracksByGenre', 'randomTracks', 'newReleases']
+          availableActions: ['search', 'searchWithGenres', 'categories', 'genres', 'recommendations', 'tracksByGenre', 'randomTracks', 'newReleases']
         }, { status: 400 });
     }
   } catch (error) {
