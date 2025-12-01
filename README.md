@@ -1,21 +1,3 @@
-# NeuroTune 🎵🧠
-
-**Music that understands your mind**
-
-NeuroTune is a personalized music recommendation platform that combines:
-- User-selected preferred & disliked genres
-- Real-time EEG-based emotion/cognitive state analysis
-- Audio metadata from Spotify API
-- User context (study, workout, commute, rest, stress relief, etc.)
-
-## Features
-
-- 🎨 **Modern UI**: Beautiful, responsive interface with Framer Motion animations
-- 🧠 **EEG Analysis**: Advanced brain-wave analysis for music preferences
-- 🎵 **Spotify Integration**: Access to millions of tracks and personalized recommendations
-- 📊 **Mood Tracking**: Real-time emotional state visualization
-- 🎯 **Context-Aware**: Playlists tailored for study, workout, rest, and more
-
 ## Tech Stack
 
 - **Frontend**: Next.js 14 with App Router, React, TypeScript
