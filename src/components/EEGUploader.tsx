@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Button from './ui/Button';
 
 interface UploadedFile {
   name: string;
@@ -13,6 +12,7 @@ interface UploadedFile {
 interface EEGUploaderProps {
   onFilesUploaded: (files: UploadedFile[]) => void;
   isProcessing?: boolean;
+  resetKey?: number; // Key to trigger reset when song changes
 }
 
 const FILE_TYPES = [
@@ -22,9 +22,14 @@ const FILE_TYPES = [
   { key: 'biomarkers', label: 'Biomarkers.txt', description: 'Band percentages + HRV' },
 ] as const;
 
-export function EEGUploader({ onFilesUploaded, isProcessing = false }: EEGUploaderProps) {
+export function EEGUploader({ onFilesUploaded, isProcessing = false, resetKey = 0 }: EEGUploaderProps) {
   const [uploadedFiles, setUploadedFiles] = useState<Map<string, UploadedFile>>(new Map());
   const [dragActive, setDragActive] = useState<string | null>(null);
+
+  // Reset uploaded files when resetKey changes (song changes)
+  useEffect(() => {
+    setUploadedFiles(new Map());
+  }, [resetKey]);
 
   const handleDrag = useCallback((e: React.DragEvent, type: string | null) => {
     e.preventDefault();
@@ -80,6 +85,8 @@ export function EEGUploader({ onFilesUploaded, isProcessing = false }: EEGUpload
         return updated;
       });
     }
+    // Reset input value to allow re-uploading same file
+    e.target.value = '';
   }, []);
 
   const readFileContent = (file: File): Promise<string> => {
@@ -101,10 +108,6 @@ export function EEGUploader({ onFilesUploaded, isProcessing = false }: EEGUpload
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <h3 className="text-xl font-bold text-white mb-6 text-center">
-        Upload EEG Data Files
-      </h3>
-      
       <div className="grid grid-cols-2 gap-4 mb-6">
         {FILE_TYPES.map((fileType) => {
           const isUploaded = uploadedFiles.has(fileType.key);
@@ -118,10 +121,10 @@ export function EEGUploader({ onFilesUploaded, isProcessing = false }: EEGUpload
                 relative p-4 rounded-xl border-2 border-dashed
                 transition-colors duration-200
                 ${dragActive === fileType.key 
-                  ? 'border-purple-500 bg-purple-500/20' 
+                  ? 'border-[#C5D93D] bg-[#E8F5A3]/30' 
                   : isUploaded 
-                    ? 'border-green-500 bg-green-500/10' 
-                    : 'border-gray-600 bg-gray-800/50 hover:border-purple-400'
+                    ? 'border-green-500 bg-green-50' 
+                    : 'border-gray-300 bg-gray-50 hover:border-[#C5D93D]'
                 }
               `}
               onDragEnter={(e) => handleDrag(e, fileType.key)}
@@ -156,20 +159,20 @@ export function EEGUploader({ onFilesUploaded, isProcessing = false }: EEGUpload
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mb-2"
+                      className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mb-2"
                     >
-                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
                     </motion.div>
                   )}
                 </AnimatePresence>
                 
-                <p className="text-sm font-medium text-white">{fileType.label}</p>
-                <p className="text-xs text-gray-400 mt-1">{fileType.description}</p>
+                <p className="text-sm font-medium text-black">{fileType.label}</p>
+                <p className="text-xs text-gray-500 mt-1">{fileType.description}</p>
                 
                 {uploadedFile && (
-                  <p className="text-xs text-green-400 mt-2 truncate max-w-full">
+                  <p className="text-xs text-green-600 mt-2 truncate max-w-full">
                     ✓ {uploadedFile.name}
                   </p>
                 )}
@@ -180,15 +183,32 @@ export function EEGUploader({ onFilesUploaded, isProcessing = false }: EEGUpload
       </div>
       
       <div className="flex justify-center">
-        <Button
-          variant="primary"
-          size="lg"
+        <button
           onClick={handleSubmit}
           disabled={!someFilesUploaded || isProcessing}
-          isLoading={isProcessing}
+          className={`
+            px-8 py-3 rounded-full text-lg font-medium transition-colors
+            ${!someFilesUploaded || isProcessing
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-black text-white hover:bg-gray-800'
+            }
+          `}
         >
-          {isProcessing ? 'Analyzing...' : allFilesUploaded ? 'Analyze All Files' : 'Analyze Available Files'}
-        </Button>
+          {isProcessing ? (
+            <span className="flex items-center gap-2">
+              <motion.span
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+              />
+              Analyzing...
+            </span>
+          ) : allFilesUploaded ? (
+            'Analyze All Files'
+          ) : (
+            'Analyze Available Files'
+          )}
+        </button>
       </div>
       
       <p className="text-center text-gray-500 text-xs mt-4">
